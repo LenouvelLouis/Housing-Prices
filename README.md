@@ -46,13 +46,15 @@ The app returns a prediction of `MedHouseVal` in:
 
 ## 🧪 API (via Gradio)
 
-Gradio exposes a REST API for the main function.  
-From your Space page, click the **🪲 Inspect** icon → **Use via API** to see the live endpoint path.
+Gradio automatically exposes a REST API for the app.  
+You can access it directly from your Space or programmatically.
 
-A typical `curl` request looks like:
+From your Space page, click the **🪲 Inspect** icon → **Use via API** to see the live endpoint path and input schema.
+
+Here’s an example `curl` request using your deployed Space:
 
 ```bash
-curl -X POST "https://<your-space-subdomain>.hf.space/api/predict" \
+curl -X POST "https://lenouvellouisdev-california-housing-api.hf.space/api/predict" \
   -H "Content-Type: application/json" \
   -d '{
     "data": [3.5, 5.4, 20, 2.7, 800]
