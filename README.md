@@ -1,5 +1,5 @@
 ---
-title: California Housing – Gradio App
+title: California Housing - Gradio App
 emoji: 🏠
 colorFrom: blue
 colorTo: green
@@ -8,50 +8,58 @@ app_file: app.py
 pinned: false
 ---
 
-# California Housing Prediction (Gradio)
+# California Housing Price Prediction
 
-A simple web app and API that serves a pre-trained **RandomForestRegressor** (scikit-learn) to predict the median house value (`MedHouseVal`) on the **California Housing** dataset from scikit-learn.
+A machine learning web application that predicts California median house values using a pre-trained Random Forest model. Built with Gradio for an interactive UI and automatic REST API generation.
 
-- ✅ Zero-setup UI via **Gradio**
-- ✅ Auto-generated **HTTP API** (see examples below)
-- ✅ Minimal dependencies, CPU-only
-- ✅ Model serialized as `model.pkl` (scikit-learn **1.6.1**)
+**[Live Demo](https://huggingface.co/spaces/LenouvelLouisDev/California-Housing-API)**
 
----
+## Features
 
-## ✨ What this Space does
+- Interactive web interface for real-time predictions
+- Auto-generated REST API endpoint via Gradio
+- Pre-trained RandomForestRegressor optimized with GridSearchCV
+- Minimal dependencies, CPU-only inference
+- Automated deployment to Hugging Face Spaces via GitHub Actions
 
-Given **five input features**:
+## Project Structure
 
-| Feature      | Description                                   |
-|--------------|-----------------------------------------------|
-| `MedInc`     | Median income in block group                  |
-| `AveRooms`   | Average number of rooms per household         |
-| `HouseAge`   | Median house age                              |
-| `AveOccup`   | Average household occupancy                    |
-| `Population` | Population of the block group                 |
+```
+Housing-Prices/
+├── app.py                 # Gradio web application
+├── model.pkl              # Trained RandomForestRegressor model
+├── House.ipynb            # Model training and analysis notebook
+├── california_housing.csv # California Housing dataset
+├── requirements.txt       # Python dependencies
+└── .github/workflows/
+    └── deploy-to-hf-space.yml  # CI/CD pipeline
+```
 
-The app returns a prediction of `MedHouseVal` in:
-- `100k$` units (dataset original unit)
-- Absolute dollars (`$`), for convenience
+## Installation
 
----
+```bash
+git clone https://github.com/LenouvelLouis/Housing-Prices.git
+cd Housing-Prices
+pip install -r requirements.txt
+```
 
-## 🚀 Try it
+## Usage
 
-- **Web UI:** open the Space and use the form to predict  
-- **Swagger/Docs:** not applicable (Gradio app), but an API endpoint is provided by Gradio (see below)
+### Web Interface
 
----
+```bash
+python app.py
+```
 
-## 🧪 API (via Gradio)
+Navigate to the local URL displayed in the terminal to access the prediction form.
 
-Gradio automatically exposes a REST API for the app.  
-You can access it directly from your Space or programmatically.
+### REST API
 
-From your Space page, click the **🪲 Inspect** icon → **Use via API** to see the live endpoint path and input schema.
+The Gradio app automatically exposes a REST API endpoint.
 
-Here’s an example `curl` request using your deployed Space:
+**Endpoint:** `POST /api/predict`
+
+**Example Request:**
 
 ```bash
 curl -X POST "https://lenouvellouisdev-california-housing-api.hf.space/api/predict" \
@@ -59,3 +67,64 @@ curl -X POST "https://lenouvellouisdev-california-housing-api.hf.space/api/predi
   -d '{
     "data": [3.5, 5.4, 20, 2.7, 800]
   }'
+```
+
+**Response:**
+
+```json
+{
+  "data": ["Predicted MedHouseVal: 1.85 (in 100k$) → $185,000"]
+}
+```
+
+## Input Features
+
+| Feature      | Description                           | Example |
+|--------------|---------------------------------------|---------|
+| `MedInc`     | Median income in block group          | 3.5     |
+| `AveRooms`   | Average rooms per household           | 5.4     |
+| `HouseAge`   | Median house age (years)              | 20      |
+| `AveOccup`   | Average household occupancy           | 2.7     |
+| `Population` | Block group population                | 800     |
+
+## Model Performance
+
+The model was trained on the California Housing dataset (20,640 samples) with hyperparameter tuning via GridSearchCV.
+
+| Model                      | R² Score | MSE    |
+|----------------------------|----------|--------|
+| Linear Regression          | 0.581    | 0.549  |
+| Random Forest (Base)       | 0.809    | 0.250  |
+| Gradient Boosting          | 0.749    | 0.329  |
+| **Random Forest (Tuned)**  | **0.764**| **0.310** |
+
+**Optimal Hyperparameters:**
+- `n_estimators`: 300
+- `max_depth`: 10
+- `min_samples_leaf`: 2
+- `min_samples_split`: 2
+
+## Tech Stack
+
+- **[Gradio](https://gradio.app/)** - Web UI and API framework
+- **[scikit-learn](https://scikit-learn.org/)** - Machine learning library
+- **[NumPy](https://numpy.org/)** - Numerical computing
+- **[Hugging Face Spaces](https://huggingface.co/spaces)** - Deployment platform
+
+## Deployment
+
+The project uses GitHub Actions for continuous deployment to Hugging Face Spaces. On every push to `main`, the workflow:
+
+1. Syncs application files to the Hugging Face Space
+2. Handles large model files via Git LFS
+3. Automatically rebuilds the Space
+
+To deploy your own instance:
+
+1. Create a Hugging Face Space with Gradio SDK
+2. Add `HF_TOKEN` to your GitHub repository secrets
+3. Update `HF_USERNAME` and `HF_SPACE_NAME` in the workflow file
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
